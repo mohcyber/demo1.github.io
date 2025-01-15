@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Add Employee</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Add Employee</h1>
+    <form id="addEmployeeForm">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="salary">Salary</label>
+            <input type="number" class="form-control" id="salary" required>
+        </div>
+        <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" class="form-control" id="department" required>
+        </div>
+        <button type="submit" class="btn btn-success">Add Employee</button>
+        <a href="employee-list.html" class="btn btn-secondary">Back to Employee List</a>
+    </form>
+</div>
+
+<script>
+    document.getElementById('addEmployeeForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const newEmployee = {
+            name: document.getElementById('name').value,
+            salary: document.getElementById('salary').value,
+            department: document.getElementById('department').value
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/employees', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newEmployee)
+            });
+
+            if (response.ok) {
+                alert('Employee added successfully!');
+                window.location.href = 'employee-list.html'; // Redirect to employee list
+            } else {
+                alert('Failed to add employee. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding the employee.');
+        }
+    });
+</script>
+</body>
+</html>

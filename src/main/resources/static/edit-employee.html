@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Edit Employee</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Employee</h1>
+    <form id="editEmployeeForm">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="salary">Salary</label>
+            <input type="number" class="form-control" id="salary" required>
+        </div>
+        <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" class="form-control" id="department" required>
+        </div>
+        <button type="submit" class="btn btn-success">Update Employee</button>
+        <a href="employee-list.html" class="btn btn-secondary">Back to Employee List</a>
+    </form>
+</div>
+
+<script>
+    // Function to get query parameters
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Load employee data into the form
+    async function loadEmployeeData() {
+        const employeeId = getQueryParam('id');
+        const response = await fetch(`http://localhost:8080/api/employees/${employeeId}`);
+        const employee = await response.json();
+
+        if (employee) {
+            document.getElementById('name').value = employee.name;
+            document.getElementById('salary').value = employee.salary;
+            document.getElementById('department').value = employee.department;
+        } else {
+            alert('Employee not found');
+            window.location.href = 'employee-list.html'; // Redirect to employee list if not found
+        }
+    }
+
+    // Handle form submission
+    document.getElementById('editEmployeeForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const employeeId = getQueryParam('id');
+        const updatedEmployee = {
+            name: document.getElementById('name').value,
+            salary: document.getElementById('salary').value,
+            department: document.getElementById('department').value
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/employees/${employeeId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedEmployee)
+            });
+
+            if (response.ok) {
+                alert('Employee updated successfully!');
+                window.location.href = 'employee-list.html'; // Redirect to employee list
+            } else {
+                alert('Failed to update employee. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the employee.');
+        }
+    });
+
+    // Load employee data on page load
+    window.onload = loadEmployeeData;
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Employee List</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Employee List</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>salary</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="employeeTable">
+        <!-- Employee rows will be populated here -->
+        </tbody>
+    </table>
+    <a href="add-employee.html" class="btn btn-primary">Add Employee</a>
+</div>
+
+<script>
+    async function loadEmployees() {
+        const response = await fetch('http://localhost:8080/api/employees');
+        const employees = await response.json();
+        const employeeTable = document.getElementById('employeeTable');
+        employeeTable.innerHTML = ''; // Clear existing rows
+
+        employees.forEach(employee => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.email}</td>
+                    <td>${employee.department}</td>
+                    <td>
+                        <a href="edit-employee.html?id=${employee.id}" class="btn btn-warning btn-sm">Edit</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${employee.id})">Delete</button>
+                    </td>
+                `;
+            employeeTable.appendChild(row);
+        });
+    }
+
+    async function deleteEmployee(id) {
+        if (confirm('Are you sure you want to delete this employee?')) {
+            await fetch(`http://localhost:8080/api/employees/${id}`, {
+                method: 'DELETE'
+            });
+            loadEmployees(); // Refresh the employee list
+        }
+    }
+
+    // Load employees on page load
+    window.onload = loadEmployees;
+</script>
+</body>
+</html>
